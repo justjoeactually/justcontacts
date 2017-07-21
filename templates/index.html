@@ -33,8 +33,9 @@
                 <span class="glyphicon glyphicon-search"></span>
               </span>
               <input class="search__input form-control" type="text" id="search" placeholder="Search" v-model="search">
-              <span class="search__clear-button glyphicon glyphicon-remove-sign" v-if="search.length" @click="search=''"></span>
-              </span>
+              <transition name="fade">
+                <span class="search__clear-button glyphicon glyphicon-remove-sign" v-if="search.length" @click="search=''"></span>
+              </transition>
             </div>
           </div>
         </form>
@@ -43,6 +44,7 @@
   </nav>
 
   <button class="add-contact__button" data-toggle="modal" data-target="#createContact">&plus;</button>
+  <button style="right:initial; left:15px; background:lightcoral; font-size:14px;" class="add-contact__button" @click="insertALot">&plus; 100</button>
 
   <section class="contacts__section container">
     <header class="row">
@@ -59,7 +61,7 @@
               class="contact"
               @dblclick="editContact(contact)"
               :key="contact.id">
-              <td style="width:52px;"> <span class="contact__icon glyphicon glyphicon-user"></span> </td>
+			  <td style="width:52px;"> <span :style="{background:contact.background}" class="contact__icon">{{contact.fullName[0]}}</span> </td>
               <td><strong>{{contact.fullName}}</strong></td>
               <td>{{contact.phone}}</td>
               <td>{{contact.zip}}</td>
@@ -72,7 +74,7 @@
               <td colspan=7>
                 <span class="contact-count">
                   <span v-show="search.length"><strong>{{ filteredContacts.length }}</strong> results match out of </span>
-                  <strong>{{ contacts.length }}</strong> contacts
+				  <strong>{{ contacts.length }}</strong> {{ contacts.length | pluralize }}
                 </span>
               </td>
             </tr>
@@ -116,7 +118,7 @@
 
               <div class="form-group">
                 <label for="zip" class="col-sm-1 control-label">
-                  <span class="form__icon glyphicon glyphicon-home"></span>
+                  <span class="form__icon glyphicon glyphicon-map-marker"></span>
                 </label>
                 <div class="col-sm-11">
                   <input type="text" class="form-control" id="zip" placeholder="Zip Code"
@@ -192,7 +194,7 @@
 
               <div class="form-group">
                 <label for="zip" class="col-sm-1 control-label">
-                  <span class="form__icon glyphicon glyphicon-home"></span>
+                  <span class="form__icon glyphicon glyphicon-map-marker"></span>
                 </label>
                 <div class="col-sm-11">
                   <input type="text" class="form-control" id="zip" v-model="editZip" placeholder="Zip Code"

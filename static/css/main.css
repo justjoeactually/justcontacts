@@ -128,7 +128,10 @@ label[for='toggle-all'] {
               0 25px 50px 0 rgba(0, 0, 0, 0.1);
 }
 .contacts__table.contacts__table td {
+  line-height: 28px;
   border: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .contacts__table li {
@@ -411,8 +414,10 @@ html .clear-completed:active {
   font-size: 14px;
   margin-left: -4px;
 }
-.contacts__table.contacts__table td {
-  line-height: 28px;
+.contact__icon {
+  display: block;
+  color: white;
+  text-transform: uppercase;
 }
 .contact:hover {
   cursor: pointer;
@@ -423,4 +428,13 @@ html .clear-completed:active {
   z-index: 3;
   transform: translateY(-50%);
   top: 50%;
+  cursor: pointer;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0
 }

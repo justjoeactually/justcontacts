@@ -1,4 +1,5 @@
 Vue.use(VeeValidate);
+
 var STORAGE_KEY = 'contacts-vuejs-2.0'
 var contactStorage = {
   fetch: function () {
@@ -7,32 +8,22 @@ var contactStorage = {
       contact.id = index
     })
     contactStorage.uid = contacts.length
+    contacts.sort(compare)
     return contacts
   },
   save: function (contacts) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts))
   }
 }
+
 var materialPalette = ["#e51c23", "#3f51b5", "#5677fc", "#03a9f4", "#00bcd4"]
+
 var pickColor = function() {
-  var index = Math.floor(Math.random()*materialPallet.length)
-  return materialPallet[index]
-}
-// visibility filters
-var filters = {
-  all: function (contacts) {
-    return contacts
-  },
-  search: function (contacts, searchTerm) {
-    return contacts.filter(function (contact) {
-      return contact.name.startsWith(searchTerm)
-    })
-  }
+  var index = Math.floor(Math.random()*materialPalette.length)
+  return materialPalette[index]
 }
 
-// app Vue instance
 var app = new Vue({
-  // app initial state
   data: {
     search: '',
     contacts: contactStorage.fetch(),
@@ -50,7 +41,12 @@ var app = new Vue({
     visibility: 'all'
   },
 
-  // watch contacts change for localStorage persistence
+  filters: {
+    pluralize: function(n) {
+      return n == 1 ? 'contact' : 'contacts'
+    }
+  },
+
   watch: {
     contacts: {
       handler: function (contacts) {
@@ -113,6 +109,24 @@ var app = new Vue({
       $('#createContact').modal('hide')
     },
 
+    insertALot: function() {
+      var i = 0
+      while(i < 100) {
+        const fn = Math.random().toString(36).substring(7)
+        const ln = Math.random().toString(36).substring(7)
+        this.contacts.push({
+          firstName: fn,
+          lastName: ln,
+          fullName: fn + ' ' + ln,
+          phone: Math.random().toString().substring(10),
+          zip: Math.random().toString().substring(5),
+          dob: Math.random().toString().substring(8),
+          background: pickColor()
+        })
+        i++
+      }
+    },
+
     removeContact: function (contact) {
       //this.contacts.splice(this.contacts.indexOf(contact), 1)
       this.contacts = this.contacts.filter(c => {return c.id != contact.id})
@@ -153,21 +167,15 @@ var app = new Vue({
   }
 })
 
-// handle routing
 function onHashChange () {
-  var visibility = window.location.hash.replace(/#\/?/, '')
-  if (filters[visibility]) {
-    app.visibility = visibility
-  } else {
-    window.location.hash = ''
-    app.visibility = 'all'
-  }
+  var search = window.location.hash.replace(/#\/?/, '')
+  this.search = search
 }
 
 function compare(a,b) {
-  if (a.firstName < b.firstName)
+  if (a.firstName.toLowerCase() < b.firstName.toLowerCase())
     return -1;
-  if (a.firstName > b.firstName)
+  if (a.firstName.toLowerCase() > b.firstName.toLowerCase())
     return 1;
   return 0;
 }

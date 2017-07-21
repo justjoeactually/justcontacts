@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact</title>
+  <script src="https://unpkg.com/vee-validate@2.0.0-rc.7"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+</head>
+<body>
+<div class="contactApp">
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Just Contacts</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="search__navbar-form navbar-form navbar-left">
+          <div class="search__form-group form-group">
+            <div class="search__input-group input-group">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-search"></span>
+              </span>
+              <input class="search__input form-control" type="text" id="search" placeholder="Search" v-model="search">
+              <span class="search__clear-button glyphicon glyphicon-remove-sign" v-if="search.length" @click="search=''"></span>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+  <button class="add-contact__button" data-toggle="modal" data-target="#createContact">&plus;</button>
+
+  <section class="contacts__section container">
+    <header class="row">
+      <div class="col-sm-12">
+        <h1 class="contacts__h1">just contacts</h1>
+        <div v-if="!contacts.length" class="text-center text-muted">Click the green button in bottom right to add a contact</div>
+      </div>
+    </header>
+    <section class="row" v-show="contacts.length" v-cloak>
+      <div class="col-sm-offset-1 col-sm-10">
+        <table class="contacts__table table table-hover" data-toggle="tooltip" title="double-click to edit a contact">
+          <tbody>
+            <tr v-for="contact in filteredContacts"
+              class="contact"
+              @dblclick="editContact(contact)"
+              :key="contact.id">
+              <td style="width:52px;"> <span class="contact__icon glyphicon glyphicon-user"></span> </td>
+              <td><strong>{{contact.fullName}}</strong></td>
+              <td>{{contact.phone}}</td>
+              <td>{{contact.zip}}</td>
+              <td>{{contact.dob}}</td>
+              <td style="width:52px;text-align:center;"><button class="destroy" @click="removeContact(contact)">&times;</button></td>
+            </tr>
+          </tbody>
+          <tfoot v-show="contacts.length" v-cloak>
+            <tr>
+              <td colspan=7>
+                <span class="contact-count">
+                  <span v-show="search.length"><strong>{{ filteredContacts.length }}</strong> results match out of </span>
+                  <strong>{{ contacts.length }}</strong> contacts
+                </span>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <div id="createContact" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Create contact</h4>
+          </div>
+
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="fullName" class="col-sm-1 control-label">
+                  <span class="form__icon form__icon--circle glyphicon glyphicon-user"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input id="fullName" name="fullName" class="form-control" type="text" placeholder="Name"
+                    v-model.lazy="newFullName" 
+                    v-validate="'required|min:3'"
+                    @keyup.enter="addContact()">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="col-sm-1 control-label">
+                  <span class="form__icon glyphicon glyphicon-earphone"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input type="tel" class="form-control" id="phone" placeholder="Phone"
+                    v-model="newPhone"
+                    @keyup.enter="addContact()">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="zip" class="col-sm-1 control-label">
+                  <span class="form__icon glyphicon glyphicon-home"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input type="text" class="form-control" id="zip" placeholder="Zip Code"
+                    v-model="newZip"
+                    @keyup.enter="addContact()">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="dob" class="col-sm-1 control-label">
+                  <span class="form__icon glyphicon glyphicon-calendar"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input type="text" class="form-control" id="dob" placeholder="Date of Birth"
+                    v-model="newDob"
+                    @keyup.enter="addContact()">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" @click="addContact()">Save</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="editContact" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{{editFullName}}</h4>
+          </div>
+
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="firstName" class="col-sm-1 control-label">
+                  <span class="form__icon form__icon--circle glyphicon glyphicon-user"></span>
+                </label>
+                <div class="col-sm-11">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <input id="firstName" class="form-control" type="text" placeholder="First Name"
+                        v-model="editFirstName" 
+                        @keyup.enter="doneEdit()"
+                        @keyup.esc="cancelEdit()">
+                    </div>
+                    <div class="col-sm-6">
+                      <input class="form-control" v-model="editLastName" type="text" placeholder="Last Name"
+                        v-model="editLastName" 
+                        @keyup.enter="doneEdit()"
+                        @keyup.esc="cancelEdit()">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="col-sm-1 control-label">
+                  <span class="form__icon glyphicon glyphicon-earphone"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input type="tel" class="form-control" id="phone" v-model="editPhone" placeholder="Phone"
+                    v-model="editPhone" 
+                    @keyup.enter="doneEdit()"
+                    @keyup.esc="cancelEdit()">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="zip" class="col-sm-1 control-label">
+                  <span class="form__icon glyphicon glyphicon-home"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input type="text" class="form-control" id="zip" v-model="editZip" placeholder="Zip Code"
+                    v-model="editZip" 
+                    @keyup.enter="doneEdit()"
+                    @keyup.esc="cancelEdit()">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="dob" class="col-sm-1 control-label">
+                  <span class="form__icon glyphicon glyphicon-calendar"></span>
+                </label>
+                <div class="col-sm-11">
+                  <input type="text" class="form-control" id="dob" v-model="editDob" placeholder="Date of Birth"
+                    v-model="editDob" 
+                    @keyup.enter="doneEdit()"
+                    @keyup.esc="cancelEdit()">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" @click="doneEdit()">Save</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+  </section>
+</div>
+
+<footer class="info">
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="/static/js/main.js"></script>
+</footer>
+
+</body>
+</html>

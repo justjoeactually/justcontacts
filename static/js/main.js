@@ -127,6 +127,10 @@ var app = new Vue({
       }
     },
 
+		clearContacts: function() {
+			this.contacts = []
+		},
+
     removeContact: function (contact) {
       //this.contacts.splice(this.contacts.indexOf(contact), 1)
       this.contacts = this.contacts.filter(c => {return c.id != contact.id})

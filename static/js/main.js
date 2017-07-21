@@ -1,4 +1,8 @@
 Vue.use(VeeValidate);
+Vue.filter('phone', function (phone) {
+  return phone.replace(/[^0-9]/g, '')
+              .replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+});
 
 var STORAGE_KEY = 'contacts-vuejs-2.0'
 var contactStorage = {
@@ -27,8 +31,7 @@ var app = new Vue({
   data: {
     search: '',
     contacts: contactStorage.fetch(),
-    newFirstName: '',
-    newLastName: '',
+    newFullName: '',
     newPhone: '',
     newZip: '',
     newDob: '',
@@ -62,47 +65,37 @@ var app = new Vue({
         return c.fullName.toLowerCase().includes(this.search.toLowerCase())
       })
     },
-    newFullName: {
-      get: function() {
-        return (this.newFirstName + ' ' + this.newLastName).trim()
-      },
-      set: function(newValue) {
-        var names = newValue.split(' ')
-        this.newFirstName = names[0]
-        this.newLastName = names.slice(1).join(' ')
-      }
+    newFirstName: function() {
+      var names = this.newFullName.split(' ')
+      return names[0]
     },
-    editFullName: {
-      get: function() {
-        return (this.editFirstName + ' ' + this.editLastName).trim()
-      },
-      set: function(newValue) {
-        var names = newValue.split(' ')
-        this.editFirstName = names[0]
-        this.editLastName = names.slice(1).join(' ')
-      }
+    newLastName: function() {
+      var names = this.newFullName.split(' ')
+      return names.slice(1).join(' ')
+    },
+    editFullName: function() {
+      return (this.editFirstName + ' ' + this.editLastName).trim()
     }
   },
 
   methods: {
     addContact: function () {
-      var value = this.newFirstName && this.newFirstName.trim()
-      if (!value) {
+      if (this.errors.first('newFullName') || this.errors.first('newPhone') || this.errors.first('newZip') || this.errors.first('newDob')) {
+        alert('fix errors')
         return
       }
       this.contacts.push({
         id: contactStorage.uid++,
+        fullName: this.newFullName,
         firstName: this.newFirstName,
         lastName: this.newLastName,
         phone: this.newPhone,
         zip: this.newZip,
         dob: this.newDob,
-        fullName: (this.newFirstName + ' ' + this.newLastName).trim(),
         background: pickColor()
       })
       this.contacts.sort(compare)
-      this.newFirstName = ''
-      this.newLastName = ''
+      this.newFullName = ''
       this.newPhone = ''
       this.newZip = ''
       this.newDob = ''
@@ -112,13 +105,13 @@ var app = new Vue({
     insertALot: function() {
       var i = 0
       while(i < 100) {
-        const fn = Math.random().toString(36).substring(7)
-        const ln = Math.random().toString(36).substring(7)
+        const fn = (Math.random()+1).toString(36).substring(7)
+        const ln = (Math.random()+1).toString(36).substring(7)
         this.contacts.push({
           firstName: fn,
           lastName: ln,
           fullName: fn + ' ' + ln,
-          phone: Math.random().toString().substring(10),
+          phone: (Math.random()+1).toString().substring(2,12),
           zip: Math.random().toString().substring(5),
           dob: Math.random().toString().substring(8),
           background: pickColor()
@@ -127,9 +120,9 @@ var app = new Vue({
       }
     },
 
-		clearContacts: function() {
-			this.contacts = []
-		},
+    clearContacts: function() {
+      this.contacts = []
+    },
 
     removeContact: function (contact) {
       //this.contacts.splice(this.contacts.indexOf(contact), 1)
@@ -147,7 +140,8 @@ var app = new Vue({
     },
 
     doneEdit: function () {
-      if (!this.editingContact) {
+      if (!this.editingContact || this.errors.first('editFirstName') || this.errors.first('editLastName') || this.errors.first('editPhone') || this.errors.first('editZip') || this.errors.first('editDob')) {
+        alert('fix errors')
         return
       }
       this.editingContact.firstName = this.editFirstName.trim()
@@ -166,6 +160,11 @@ var app = new Vue({
 
     cancelEdit: function (contact) {
       this.editingContact = null
+      this.editFirstName = ''
+      this.editLastName = ''
+      this.editPhone = ''
+      this.editZip = ''
+      this.editDob = ''
       $('#editContact').modal('hide')
     }
   }
@@ -189,5 +188,6 @@ onHashChange()
 
 // mount
 app.$mount('.contactApp')
-$('#createContact').on('shown.bs.modal', function() { $('#fullName').focus() })
+$('#createContact').on('shown.bs.modal', function() { $('#newFullName').focus() })
+$('#editContact').on('shown.bs.modal', function() { $('#editFirstName').focus() })
 

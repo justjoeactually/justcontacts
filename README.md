@@ -1,2 +1,2 @@
 # just contacts
-Toy contacts SPA made with Python, Flask, and Vue.js.
+Toy contacts site made with Python, Flask, and Vue.js then hosted on pythonanywhere.com

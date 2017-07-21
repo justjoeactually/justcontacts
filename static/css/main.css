@@ -174,14 +174,6 @@ label[for='toggle-all'] {
   appearance: none;
 }
 
-.contacts__table li .toggle:after {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#ededed" stroke-width="3"/></svg>');
-}
-
-.contacts__table li .toggle:checked:after {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
-}
-
 .contacts__table li label {
   word-break: break-all;
   padding: 15px 60px 15px 15px;
@@ -360,23 +352,34 @@ html .clear-completed:active {
   }
 }
 
-.add-contact__button {
+.actions__group--left,
+.actions__group--right {
   position: fixed;
   bottom: 0;
-  right: 0;
+  margin: 0 24px 24px;
+  display: flex;
+  flex-flow: column nowrap;
   z-index: 1;
-  margin: 0 24px 24px 0;
+}
+.actions__group--left {
+  left: 0;
+}
+.actions__group--right {
+  right: 0;
+}
+.add-contact__button {
   border-radius: 50%;
   height: 56px;
   width: 56px;
+  margin-top: 26px;
   font-size: 38px;
   box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
   color: white;
   background: #4fc08d;
-  transition: background .1s ease;
+  transition: opacity .1s ease;
 }
 .add-contact__button:hover {
-  background: #73cca4;
+  opacity: .75;
 }
 .modal-header {
   background: #f7f7f7;

@@ -32,7 +32,7 @@
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-search"></span>
               </span>
-              <input class="search__input form-control" type="text" id="search" placeholder="Search" v-model="search">
+              <input class="search__input form-control" type="text" id="search" placeholder="Search Name" v-model="search">
               <transition name="fade">
                 <span class="search__clear-button glyphicon glyphicon-remove-sign" v-if="search.length" @click="search=''"></span>
               </transition>
@@ -84,9 +84,14 @@
   </section>
 
   <footer>
-    <button class="add-contact__button" data-toggle="modal" data-target="#createContact">&plus;</button>
-    <button style="right:initial; left:15px; bottom:80px; background:lightslategray; font-size:14px;" class="add-contact__button" @click="insertALot">&plus; 100</button>
-    <button style="right:initial; left:15px; background:lightcoral;" class="add-contact__button" @click="clearContacts">&minus;</button>
+    <div class="actions__group--right">
+      <button class="add-contact__button" data-toggle="modal" data-target="#createContact">&plus;</button>
+    </div>
+    <div class="actions__group--left">
+      <button style="font-size: 18px; background:lightblue;" class="add-contact__button" data-toggle="tooltip" title="search contacts" @click="focusOnSearch"><span class="glyphicon glyphicon-search"></span></button>
+      <button style="background:lightslategray; font-size:14px;" class="add-contact__button" data-toggle="tooltip" title="add dummy contacts" @click="insertALot">&plus; 100</button>
+      <button style="background:lightcoral;" class="add-contact__button" data-toggle="tooltip" title="remove all contacts" @click="clearContacts">&minus;</button>
+    </div>
 
     <div id="createContact" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -105,7 +110,7 @@
                 <div class="col-sm-11">
                   <input id="newFullName" name="newFullName" class="form-control" type="text" placeholder="Name"
                     v-model.lazy="newFullName"
-                    v-validate="'alpha|min:2'"
+                    v-validate="'alpha_spaces|min:2'"
                     @keyup.enter="addContact()">
                   <span v-show="errors.has('newFullName')" class="text-danger">{{ errors.first('newFullName') }}</span>
                 </div>
@@ -179,7 +184,7 @@
                     <div class="col-sm-6">
                       <input id="editFirstName" name="editFirstName" class="form-control" type="text" placeholder="First Name"
                         v-model="editFirstName" 
-                        v-validate="'required|alpha|min:2'"
+                        v-validate="'required|alpha_spaces|min:2'"
                         @keyup.enter="doneEdit()"
                         @keyup.esc="cancelEdit()">
                       <span v-show="errors.has('editFirstName')" class="text-danger">{{ errors.first('editFirstName') }}</span>
@@ -187,7 +192,7 @@
                     <div class="col-sm-6">
                       <input name="editLastName" class="form-control" type="text" placeholder="Last Name"
                         v-model="editLastName"
-                        v-validate="'alpha|min:2'"
+                        v-validate="'alpha_spaces|min:2'"
                         @keyup.enter="doneEdit()"
                         @keyup.esc="cancelEdit()">
                       <span v-show="errors.has('editLastName')" class="text-danger">{{ errors.first('editLastName') }}</span>

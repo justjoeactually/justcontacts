@@ -120,6 +120,10 @@ var app = new Vue({
       }
     },
 
+    focusOnSearch: function() {
+      $('#search').focus()
+    },
+
     clearContacts: function() {
       this.contacts = []
     },

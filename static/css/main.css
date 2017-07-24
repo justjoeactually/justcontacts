@@ -367,6 +367,11 @@ html .clear-completed:active {
 .actions__group--right {
   right: 0;
 }
+@media all and (max-width: 991px) {
+  .actions__group--left {
+    display: none;
+  }
+}
 .add-contact__button {
   border-radius: 50%;
   height: 56px;

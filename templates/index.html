@@ -70,11 +70,13 @@
           </tbody>
           <tfoot v-show="contacts.length" v-cloak>
             <tr>
-              <td colspan=7>
+              <td colspan=7 class="text-muted">
                 <span class="contact-count">
                   <span v-show="search.length"><strong>{{ filteredContacts.length }}</strong> results match out of </span>
                   <strong>{{ contacts.length }}</strong> {{ contacts.length | pluralize }}
                 </span>
+                <br>
+                <em>Double-click to edit a record</em>
               </td>
             </tr>
           </tfoot>

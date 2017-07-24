@@ -8,11 +8,11 @@ var STORAGE_KEY = 'contacts-vuejs-2.0'
 var contactStorage = {
   fetch: function () {
     var contacts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    contacts.sort(compare)
     contacts.forEach(function (contact, index) {
       contact.id = index
     })
     contactStorage.uid = contacts.length
-    contacts.sort(compare)
     return contacts
   },
   save: function (contacts) {
@@ -108,6 +108,7 @@ var app = new Vue({
         const fn = (Math.random()+1).toString(36).substring(7)
         const ln = (Math.random()+1).toString(36).substring(7)
         this.contacts.push({
+          id: contactStorage.uid++,
           firstName: fn,
           lastName: ln,
           fullName: fn + ' ' + ln,
@@ -118,6 +119,7 @@ var app = new Vue({
         })
         i++
       }
+      this.contacts.sort(compare)
     },
 
     focusOnSearch: function() {
@@ -135,6 +137,8 @@ var app = new Vue({
 
     editContact: function (contact) {
       this.editingContact = contact;
+
+      this.editId = contact.id
       this.editFirstName = contact.firstName
       this.editLastName = contact.lastName
       this.editPhone = contact.phone
@@ -148,6 +152,7 @@ var app = new Vue({
         alert('fix errors')
         return
       }
+      let editingIndex = this.contacts.indexOf(this.editingContact)
       this.editingContact.firstName = this.editFirstName.trim()
       this.editingContact.lastName = this.editLastName.trim()
       this.editingContact.fullName = (this.editingContact.firstName + ' ' + this.editingContact.lastName).trim()
@@ -157,7 +162,8 @@ var app = new Vue({
       if (!this.editingContact.fullName) {
         this.removeContact(this.editingContact)
       }
-      Vue.set(this.contacts, this.editingContact.id, this.editingContact)
+      Vue.set(this.contacts, editingIndex, this.editingContact)
+      this.contacts.sort(compare)
       this.editingContact = null
       $('#editContact').modal('hide')
     },
